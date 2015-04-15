@@ -1,3 +1,5 @@
+import math
+
 __author__ = 'Dan'
 
 import unittest
@@ -27,7 +29,7 @@ class JobTestExecute(unittest.TestCase):
         for i in range(1):
             test_job.execute_next()
 
-        assert test_job.work_data[0] - 2.222222 < 1
+        assert math.fabs(test_job.work_data[0] - 2.222222) < 1
 
     def testJobExecutesOnMoreThanOneElement(self):
         work_data = [1.111111, 1.111111, 1.111111, 1.111111, 1.111111]
@@ -36,8 +38,8 @@ class JobTestExecute(unittest.TestCase):
         for i in range(2000):
             test_job.execute_next()
 
-        assert test_job.work_data[0] - 1001 * 1.111111 < 1
-        assert test_job.work_data[1] - 1001 * 1.111111 < 1
+        assert math.fabs(test_job.work_data[0] - 1001 * 1.111111) < 1
+        assert math.fabs(test_job.work_data[1] - 1001 * 1.111111) < 1
 
     def testJobExecutesUntilFinish(self):
         work_data = [1.111111, 1.111111, 1.111111, 1.111111, 1.111111]
@@ -46,7 +48,7 @@ class JobTestExecute(unittest.TestCase):
         while not test_job.is_finished():
             test_job.execute_next()
 
-        assert test_job.work_data[-1] - 1001 * 1.111111 < 1
+        assert math.fabs(test_job.work_data[-1] - 1001 * 1.111111) < 1
 
 
 if __name__ == '__main__':

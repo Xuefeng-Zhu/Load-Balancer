@@ -12,22 +12,13 @@ class WorkerThread(threading.Thread):
         super(WorkerThread, self).__init__()
         self.throttling = 100
         self.current_job = None
-        self.timer = threading.Timer(100 * 1000, self.timer_callback)
 
     def run(self):
         """ This is the actual workhorse of the thread.  Executes the job if there is a current unfinished job. """
+        start_time = time.time()
         while not self.current_job.is_finished():
-            self.current_job.execute_next()
-
-    def timer_callback(self):
-        """ We will check the throttling value every second.  If we are throttled then we will sleep the thread. """
-        threading.Timer(100 * 1000, self.timer_callback())
-        if self.throttling < 100:
-            time.sleep((100 - self.throttling) / 1000.0)
-
-
-
-
-
-
-
+            if time.time() - start_time < self.throttling / 1000.0:
+                self.current_job.execute_next()
+            else:
+                time.sleep((100 - self.throttling) / 1000.0)
+                start_time = time.time()

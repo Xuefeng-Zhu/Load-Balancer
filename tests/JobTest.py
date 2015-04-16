@@ -7,7 +7,7 @@ import unittest
 from Job import Job
 
 
-class JobTestInitialize(unittest.TestCase):
+class JobInitializeTest(unittest.TestCase):
     def testWorkDataInit(self):
         work_data = [1.111111] * 5
         test_job = Job(work_data)
@@ -21,7 +21,7 @@ class JobTestInitialize(unittest.TestCase):
         assert not test_job.is_finished()
 
 
-class JobTestExecute(unittest.TestCase):
+class JobExecuteTest(unittest.TestCase):
     def testJobExecuteOnce(self):
         work_data = [1.111111] * 5
         test_job = Job(work_data)

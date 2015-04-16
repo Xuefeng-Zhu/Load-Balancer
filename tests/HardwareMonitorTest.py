@@ -1,3 +1,5 @@
+from JobQueue import JobQueue
+
 __author__ = 'Dan'
 
 import unittest
@@ -10,8 +12,7 @@ from HardwareMonitor import HardwareMonitor
 
 class HardwareMonitorUsageTest(unittest.TestCase):
     def testHardwareMonitorTracksReasonableCpuUsage(self):
-        worker_thread = WorkerThread()
-        monitor = HardwareMonitor(worker_thread)
+        monitor = HardwareMonitor(None)
 
         monitor.start()
         time.sleep(2)
@@ -24,52 +25,55 @@ class HardwareMonitorUsageTest(unittest.TestCase):
 
     def testHardwareMonitorCpuUsageIncreasesWithWorkload(self):
         work_data = [1.111111] * 1000
-        test_job = Job(work_data)
-        worker_thread = WorkerThread()
+        test_job = [Job(work_data)]
+        job_queue = JobQueue()
+        job_queue.add_jobs(test_job)
+        worker_thread = WorkerThread(job_queue)
         monitor = HardwareMonitor(worker_thread)
 
         monitor.start()
-        time.sleep(2)
+        time.sleep(0.5)
         clean_cpu_usage = monitor.get_cpu_usage()
 
-        worker_thread.current_job = test_job
         worker_thread.run()
-
-        time.sleep(2)
-        dirty_cpu_usage = monitor.get_cpu_usage()
-
-        monitor.stop()
         while worker_thread.is_alive():
             pass
+        dirty_cpu_usage = monitor.get_cpu_usage()
+        monitor.stop()
 
         assert dirty_cpu_usage > clean_cpu_usage
 
     def testHardwareMonitorCpuUsageDecreasesWithThrottling(self):
-        work_data = [1.111111] * 1000
-        test_job_1 = Job(work_data.copy())
-        test_job_2 = Job(work_data.copy())
-        worker_thread = WorkerThread()
+        work_data_1 = [1.111111] * 1000
+        work_data_2 = [1.111111] * 1000
+        test_jobs = [Job(work_data_1), Job(work_data_2)]
+        job_queue = JobQueue()
+        job_queue.add_jobs(test_jobs)
+        worker_thread = WorkerThread(job_queue)
         monitor = HardwareMonitor(worker_thread)
 
         monitor.start()
-        time.sleep(2)
-        worker_thread.current_job = test_job_1
         worker_thread.run()
+        while worker_thread.is_alive():
+            pass
         full_cpu_usage = monitor.get_cpu_usage()
         monitor.stop()
 
+        work_data_1 = [1.111111] * 1000
+        work_data_2 = [1.111111] * 1000
+        test_jobs = [Job(work_data_1), Job(work_data_2)]
+        job_queue = JobQueue()
+        job_queue.add_jobs(test_jobs)
+        worker_thread = WorkerThread(job_queue)
+        worker_thread.throttling = 20
+
+        monitor.start()
+        worker_thread.run()
         while worker_thread.is_alive():
             pass
 
-        worker_thread.current_job = test_job_2
-        worker_thread.throttling = 20
-        worker_thread.run()
-        time.sleep(2)
         throttled_cpu_usage = monitor.get_cpu_usage()
         monitor.stop()
-
-        while worker_thread.is_alive():
-            pass
 
         assert throttled_cpu_usage < full_cpu_usage
 

@@ -1,3 +1,5 @@
+import queue
+
 __author__ = 'Dan'
 
 
@@ -7,6 +9,7 @@ class JobQueue(object):
     def __init__(self):
         """ Initializes an empty job queue. """
         self.job_list = []
+        self.event_queue = queue.Queue()
 
     def get_length(self):
         """ Returns the number of remaining jobs. """

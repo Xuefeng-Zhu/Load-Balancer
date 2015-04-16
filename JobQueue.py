@@ -30,7 +30,6 @@ class JobQueue(object):
     def pop_jobs(self, number):
         """ Pops up to the specified number of jobs from the queue and returns them. """
         end_index = min(number, len(self.job_list))
-        print(str(end_index))
         popped_jobs = self.job_list[0:end_index]
         del self.job_list[0:end_index]
 

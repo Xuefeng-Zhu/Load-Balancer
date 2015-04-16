@@ -77,6 +77,10 @@ class HardwareMonitorUsageTest(unittest.TestCase):
 
         assert throttled_cpu_usage < full_cpu_usage
 
+    def testNetworkDelay(self):
+        monitor = HardwareMonitor(None)
+        monitor.calculate_network_delay("www.google.com")
+        assert HardwareMonitor.NETWORK_DELAY > 0
 
 if __name__ == '__main__':
     unittest.main()

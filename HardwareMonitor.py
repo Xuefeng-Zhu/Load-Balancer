@@ -1,4 +1,5 @@
 import sched
+import subprocess
 
 __author__ = 'Dan'
 
@@ -11,6 +12,7 @@ class HardwareMonitor(object):
     """ Monitors the system performance of the node, used for the transfer policy. """
     SAMPLES_PER_SEC = 5
     NUM_SAMPLES = 10
+    NETWORK_DELAY = 0
 
     def __init__(self, worker_thread):
         """ Initializes the sample collections and threads necessary for scheduling. """
@@ -58,3 +60,16 @@ class HardwareMonitor(object):
             total += sample
 
         return total / HardwareMonitor.NUM_SAMPLES
+
+    def calculate_network_delay(self, ip):
+        """ Returns the average ping between the nodes. """
+        p = subprocess.Popen(["ping.exe", ip], stdout=subprocess.PIPE)
+        out_text = p.communicate()[0]
+
+        l_search_string = "Average = "
+        r_search_string = "ms"
+        l_index = out_text.rfind(l_search_string.encode())
+        r_index = out_text.rfind(r_search_string.encode())
+        delay_text = out_text[l_index+len(l_search_string):r_index]
+
+        HardwareMonitor.NETWORK_DELAY = int(delay_text)

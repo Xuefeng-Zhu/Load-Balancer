@@ -9,16 +9,18 @@ import time
 
 class HardwareMonitor(object):
     """ Monitors the system performance of the node, used for the transfer policy. """
-    SAMPLES_PER_SEC = 2
+    SAMPLES_PER_SEC = 5
     NUM_SAMPLES = 10
 
-    def __init__(self):
+    def __init__(self, worker_thread):
         """ Initializes the sample collections and threads necessary for scheduling. """
         super(HardwareMonitor, self).__init__()
+        self.monitoring = False
         self.cpu_samples = [0.0] * HardwareMonitor.NUM_SAMPLES
         self.current_sample = 0
         self.monitor_thread = None
-        self.monitoring = False
+
+        self.worker_thread = worker_thread
 
     def start(self):
         """ Starts the monitor thread and prevents it from ending without manually calling stop. """
@@ -29,6 +31,11 @@ class HardwareMonitor(object):
     def stop(self):
         """ Causes the monitor thread to finish on next execution.  Safer than killing the thread outright. """
         self.monitoring = False
+        self.cpu_samples = [0.0] * HardwareMonitor.NUM_SAMPLES
+
+    def throttle(self, value):
+        """ Interface for throttling the worker thread through the hardware monitor. """
+        self.worker_thread.throttling = value
 
     def record_cpu(self, scheduler=None):
         """ Performs a system call to record another sample of cpu utilization. """
@@ -37,7 +44,7 @@ class HardwareMonitor(object):
             scheduler.enter(0, 1, self.record_cpu, [scheduler])
             scheduler.run()
         else:
-            self.cpu_samples[self.current_sample] = psutil.cpu_percent(0.1)
+            self.cpu_samples[self.current_sample] = psutil.cpu_percent()
             self.current_sample = (self.current_sample + 1) % HardwareMonitor.NUM_SAMPLES
 
             if self.monitoring:

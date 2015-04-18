@@ -1,13 +1,13 @@
-from JobQueue import JobQueue
+from job_queue import JobQueue
 
 __author__ = 'Dan'
 
 import unittest
 import time
 
-from Job import Job
-from WorkerThread import WorkerThread
-from HardwareMonitor import HardwareMonitor
+from job import Job
+from worker_thread import WorkerThread
+from hardware_monitor import HardwareMonitor
 
 
 class HardwareMonitorUsageTest(unittest.TestCase):

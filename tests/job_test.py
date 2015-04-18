@@ -4,7 +4,7 @@ __author__ = 'Dan'
 
 import unittest
 
-from Job import Job
+from job import Job
 
 
 class JobInitializeTest(unittest.TestCase):

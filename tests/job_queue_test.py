@@ -1,10 +1,10 @@
-from Job import Job
+from job import Job
 
 __author__ = 'Dan'
 
 import unittest
 
-from JobQueue import JobQueue
+from job_queue import JobQueue
 
 
 class JobQueueJobsTest(unittest.TestCase):

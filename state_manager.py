@@ -3,10 +3,10 @@ import pickle
 from functools import wraps
 from threading import Thread
 from time import sleep
-from state import State
 
 __author__ = 'Xuefeng Zhu'
 
+HOST = ''
 PORT = 12345
 
 
@@ -27,6 +27,7 @@ class StateManager:
         self.remote_ip = remote_ip
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket.bind((HOST, PORT))
 
     @thread_func
     def send_state(self, state):

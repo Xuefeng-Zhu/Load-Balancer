@@ -1,3 +1,6 @@
+"""
+Just use python Queue
+"""
 import queue
 
 __author__ = 'Dan'

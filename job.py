@@ -8,8 +8,9 @@ class Job(object):
     """
     ITER_COUNT = 1000
 
-    def __init__(self, work_data):
+    def __init__(self, pos, work_data):
         """ Initializes private variables and work data. """
+        self.pos = pos
         self.work_data = work_data
         self.current_element = 0
         self.current_iteration = 0

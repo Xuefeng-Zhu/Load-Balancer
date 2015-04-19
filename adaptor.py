@@ -12,6 +12,7 @@ class Adaptor:
         self.job_queue = job_queue
         self.transfer_manager = transfer_manager
         self.state_manager = state_manager
+        self.state_manager.adaptor = self
         self.hardware_monitor = hardware_monitor
 
         self.remote_state = State()

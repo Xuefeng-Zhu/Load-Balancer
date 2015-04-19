@@ -22,7 +22,7 @@ def thread_func(func):
 
 
 class TransferManager:
-    def __init__(self, job_queue ,remote_ip):
+    def __init__(self, job_queue, remote_ip):
         self.job_queue = job_queue
         self.remote_ip = remote_ip
 

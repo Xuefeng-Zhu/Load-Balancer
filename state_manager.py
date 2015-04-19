@@ -22,9 +22,9 @@ def thread_func(func):
 
 
 class StateManager:
-    def __init__(self, adaptor, remote_ip):
-        self.adaptor = adaptor
+    def __init__(self, remote_ip, adaptor=None):
         self.remote_ip = remote_ip
+        self.adaptor = adaptor
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.bind((HOST, PORT))

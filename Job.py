@@ -2,7 +2,10 @@ __author__ = 'Dan'
 
 
 class Job(object):
-    """ A simple data structure which contains the data and handles the workload for MP4. """
+
+    """ A simple data structure which contains the data
+    and handles the workload for MP4.
+    """
     ITER_COUNT = 1000
 
     def __init__(self, work_data):
@@ -21,11 +24,7 @@ class Job(object):
             self.current_iteration = 0
 
     def is_finished(self):
-        """ Returns true if every element in the work_data has been processed. """
+        """ Returns true if every element in the work_data has been
+        processed.
+        """
         return self.current_element == len(self.work_data)
-
-
-
-
-
-

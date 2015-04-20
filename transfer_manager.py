@@ -36,7 +36,7 @@ class TransferManager:
 
         self.socket.sendto(job_p, (self.remote_ip, PORT))
 
-        print "Job sent"
+        print "Job %d sent" % job.id
 
     @thread_func
     def receive_job(self):
@@ -45,5 +45,5 @@ class TransferManager:
             job = pickle.loads(job_p)
             self.job_queue.put(job)
 
-            print "Job received"
+            print "Job %d received" % job.id
 

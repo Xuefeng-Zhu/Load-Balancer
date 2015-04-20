@@ -17,11 +17,12 @@ class Launcher:
     def __init__(self, is_master, remote_ip, vector):
         self.is_local = is_master
         self.vector = vector
+        self.finished_jobs = []
 
         self.job_queue = Queue()
-        self.work_thread = WorkerThread(self.job_queue)
+        self.work_thread = WorkerThread(self.job_queue, self)
         self.hardware_monitor = HardwareMonitor(self.work_thread)
-        self.transfer_manager = TransferManager(self.job_queue, remote_ip)
+        self.transfer_manager = TransferManager(self.job_queue, remote_ip, self)
         self.state_manager = StateManager(remote_ip)
         self.adaptor = Adaptor(self.work_thread, self.job_queue,
                                self.transfer_manager, self.state_manager, self.hardware_monitor)
@@ -48,6 +49,22 @@ class Launcher:
         for _ in range(NUM_JOB / 2):
             job = self.job_queue.get()
             self.transfer_manager.send_job(job)
+
+    def on_job_finish(self, job):
+        if self.is_local:
+            self.finished_jobs.append(job)
+        else:
+            self.transfer_jobs(job)
+
+        if len(self.finished_jobs) == NUM_JOB:
+            self.aggregate_jobs()
+
+    def aggregate_jobs(self):
+        for job in self.finished_jobs:
+            pos = job.pos
+            for data in job.work_data:
+                self.vector[pos] = data
+                pos += 1
 
 
 def load_config():

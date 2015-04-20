@@ -31,13 +31,13 @@ class TransferManager:
         self.socket.bind((HOST, PORT))
 
     @thread_func
-    def send_job(self):
-        job = self.job_queue.get()
-        job_p = pickle.dumps(job)
+    def send_job(self, job_list):
+        for job in job_list:
+            job_p = pickle.dumps(job)
+            print len(job_p)
+            self.socket.sendto(job_p, (self.remote_ip, PORT))
 
-        self.socket.sendto(job_p, (self.remote_ip, PORT))
-
-        print "Job %d sent" % job.id
+            print "Job %d sent" % job.id
 
     @thread_func
     def receive_job(self):
@@ -50,4 +50,3 @@ class TransferManager:
                 self.job_queue.put(job)
 
             print "Job %d received" % job.id
-

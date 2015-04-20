@@ -18,7 +18,7 @@ class WorkerThread(threading.Thread):
     def run(self):
         """ This is the actual workhorse of the thread.  Executes the job if there is a current unfinished job. """
         start_time = time.time()
-        while True:
+        while self.job_queue.qsize() > 0:
             self.current_job = self.job_queue.get()
             while not self.current_job.is_finished():
                 if time.time() - start_time < self.throttling / 1000.0:

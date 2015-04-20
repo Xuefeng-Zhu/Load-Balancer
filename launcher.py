@@ -11,7 +11,7 @@ from adaptor import Adaptor
 
 __author__ = 'Xuefeng Zhu'
 
-NUM_JOB = 1024
+NUM_JOB = 1024 * 32
 
 
 class Launcher:
@@ -37,6 +37,11 @@ class Launcher:
         self.transfer_manager.receive_job()
         self.state_manager.receive_state()
         self.state_manager.start()
+
+        while self.job_queue.qsize() < NUM_JOB / 2:
+            sleep(0.1)
+
+        # receive all jobs and exit the bootstrap stage
         self.work_thread.start()
 
     def allocate_jobs(self):
@@ -47,15 +52,17 @@ class Launcher:
             self.job_queue.put(job)
 
     def transfer_jobs(self):
+        job_list = []
         for _ in range(NUM_JOB / 2):
-            job = self.job_queue.get()
-            self.transfer_manager.send_job(job)
+            job_list.append(self.job_queue.get())
+
+        self.transfer_manager.send_job(job_list)
 
     def on_job_finish(self, job):
         if self.is_master:
             self.finished_jobs.append(job)
         else:
-            self.transfer_jobs(job)
+            self.transfer_jobs([job])
 
         if len(self.finished_jobs) == NUM_JOB:
             self.aggregate_jobs()

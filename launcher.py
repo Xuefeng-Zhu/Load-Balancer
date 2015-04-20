@@ -37,12 +37,13 @@ class Launcher:
         self.transfer_manager.receive_job()
         self.state_manager.receive_state()
         self.state_manager.start()
+        self.work_thread.start()
 
     def allocate_jobs(self):
         job_size = len(self.vector) / NUM_JOB
         for i in range(NUM_JOB):
             pos = i * job_size
-            job = Job(i, pos, self.vector[pos, pos + job_size])
+            job = Job(i, pos, self.vector[pos: pos + job_size])
             self.job_queue.put(job)
 
     def transfer_jobs(self):

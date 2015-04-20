@@ -1,5 +1,6 @@
 import json
 import sys
+from time import sleep
 from Queue import Queue
 from job import Job
 from worker_thread import WorkerThread
@@ -15,7 +16,7 @@ NUM_JOB = 1024
 
 class Launcher:
     def __init__(self, is_master, remote_ip, vector):
-        self.is_local = is_master
+        self.is_master = is_master
         self.vector = vector
         self.finished_jobs = []
 
@@ -50,7 +51,7 @@ class Launcher:
             self.transfer_manager.send_job(job)
 
     def on_job_finish(self, job):
-        if self.is_local:
+        if self.is_master:
             self.finished_jobs.append(job)
         else:
             self.transfer_jobs(job)
@@ -69,6 +70,11 @@ class Launcher:
 def load_config():
     with open('config.json') as f:
         return json.load(f)
+
+
+def print_data(vector):
+    for i, v in enumerate(vector):
+        print "A[%d]= %d" % (i, v)
 
 
 if __name__ == '__main__':
@@ -96,3 +102,11 @@ if __name__ == '__main__':
     launcher.bootstrap()
 
     launcher.work_thread.join()
+
+    while is_master and len(launcher.finished_jobs) != NUM_JOB:
+        sleep(1)
+
+    if is_master:
+        print_data(vector)
+
+    print "All jobs are finished!"

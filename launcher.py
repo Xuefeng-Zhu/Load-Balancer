@@ -38,7 +38,6 @@ class Launcher:
         self.state_manager.start()
 
     def allocate_jobs(self):
-
         job_size = len(self.vector) / NUM_JOB
         for i in range(NUM_JOB):
             pos = i * job_size

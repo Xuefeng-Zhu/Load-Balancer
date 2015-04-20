@@ -22,9 +22,10 @@ def thread_func(func):
 
 
 class TransferManager:
-    def __init__(self, job_queue, remote_ip):
+    def __init__(self, job_queue, remote_ip, launcher):
         self.job_queue = job_queue
         self.remote_ip = remote_ip
+        self.launcher = launcher
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.bind((HOST, PORT))
@@ -43,7 +44,10 @@ class TransferManager:
         while True:
             job_p, _ = self.socket.recvfrom(2048)
             job = pickle.loads(job_p)
-            self.job_queue.put(job)
+            if job.is_finished():
+                self.launcher.on_job_finish(job)
+            else:
+                self.job_queue.put(job)
 
             print "Job %d received" % job.id
 

@@ -14,8 +14,8 @@ NUM_JOB = 1024
 
 
 class Launcher:
-    def __init__(self, is_local, remote_ip, vector):
-        self.is_local = is_local
+    def __init__(self, is_master, remote_ip, vector):
+        self.is_local = is_master
         self.vector = vector
 
         self.job_queue = Queue()
@@ -27,7 +27,7 @@ class Launcher:
                                self.transfer_manager, self.state_manager, self.hardware_monitor)
 
     def bootstrap(self):
-        if self.is_local:
+        if self.is_master:
             self.allocate_jobs()
             self.transfer_jobs()
 
@@ -56,26 +56,26 @@ def load_config():
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print "Usage: python launcher.py L/R"
+        print "Usage: python launcher.py M/S"
         exit(0)
 
-    if sys.argv[1] == "L":
-        is_local = True
-    elif sys.argv[1] == "R":
-        is_local = False
+    if sys.argv[1] == "M":
+        is_master = True
+    elif sys.argv[1] == "S":
+        is_master = False
     else:
         print "Please provide valid argument"
         exit(0)
 
     config = load_config()
-    if is_local:
-        remote_ip = config["Remote"]
+    if is_master:
+        remote_ip = config["slave"]
         vector = [1.111111] * 1024 * 1024 * 32
     else:
-        remote_ip = config["Local"]
+        remote_ip = config["master"]
         vector = None
 
-    launcher = Launcher(is_local, remote_ip, vector)
+    launcher = Launcher(is_master, remote_ip, vector)
     launcher.bootstrap()
 
     launcher.work_thread.join()

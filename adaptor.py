@@ -29,11 +29,14 @@ class Adaptor:
 
     def on_state_receive(self, state):
         self.remote_state = state
+        self.on_state_update()
 
-    def on_new_job(self, job):
-        self.job_queue.put(job)
+    def on_state_update(self):
         if self.job_queue.qsize() > JOB_QUEUE_LIMIT:
             if self.remote_state.num_jobs < JOB_QUEUE_LIMIT:
-                self.transfer_manager.send_job()
+                num_transfer_jobs = min(self.job_queue.qsize()-JOB_QUEUE_LIMIT,
+                                        JOB_QUEUE_LIMIT-self.remote_state.num_jobs)
+                for _ in range(num_transfer_jobs):
+                    self.transfer_manager.send_job()
 
 

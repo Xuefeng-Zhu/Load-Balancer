@@ -34,6 +34,7 @@ class Launcher:
         self.hardware_monitor.start()
         self.transfer_manager.receive_job()
         self.state_manager.receive_state()
+        self.state_manager.start()
 
     def allocate_jobs(self):
 

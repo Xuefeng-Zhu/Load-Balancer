@@ -31,7 +31,7 @@ class TransferManager:
 
         self.recv_socket = socket.socket()
         self.recv_socket.bind((HOST, PORT))
-        self.listen(5)
+        self.recv_socket.listen(5)
 
     @thread_func
     def send_job(self, job_list):

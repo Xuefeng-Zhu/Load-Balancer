@@ -55,7 +55,7 @@ class TransferManager:
                 else:
                     break
 
-            job_list = pickle.loads(data)
+            job_list = pickle.loads(''.join(data))
             for job in job_list:
                 if job.is_finished():
                     self.launcher.on_job_finish(job)

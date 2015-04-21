@@ -36,7 +36,10 @@ class Adaptor:
             if self.remote_state.num_jobs < JOB_QUEUE_LIMIT:
                 num_transfer_jobs = min(self.job_queue.qsize()-JOB_QUEUE_LIMIT,
                                         JOB_QUEUE_LIMIT-self.remote_state.num_jobs)
+                job_list = []
                 for _ in range(num_transfer_jobs):
-                    self.transfer_manager.send_job()
+                    job_list.append(self.job_queue.get())
+
+                self.transfer_manager.send_job(job_list)
 
 

@@ -27,26 +27,41 @@ class TransferManager:
         self.remote_ip = remote_ip
         self.launcher = launcher
 
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.socket.bind((HOST, PORT))
+        self.send_socket = socket.socket()
+
+        self.recv_socket = socket.socket()
+        self.recv_socket.bind((HOST, PORT))
+        self.listen(5)
 
     @thread_func
     def send_job(self, job_list):
-        for job in job_list:
-            job_p = pickle.dumps(job)
-            print len(job_p)
-            self.socket.sendto(job_p, (self.remote_ip, PORT))
+        self.send_socket.connect((self.remote_ip, PORT))
 
+        job_list_p = pickle.dumps(job_list)
+        self.send_socket.sendall(job_list_p)
+
+        for job in job_list:
             print "Job %d sent" % job.id
 
     @thread_func
     def receive_job(self):
         while True:
-            job_p, _ = self.socket.recvfrom(2048)
-            job = pickle.loads(job_p)
-            if job.is_finished():
-                self.launcher.on_job_finish(job)
-            else:
-                self.job_queue.put(job)
+            client, _ = self.recv_socket.accept()
+            data = []
+            while True:
+                tmp = client.recv(4096)
+                if tmp:
+                    data.append(tmp)
+                else:
+                    break
 
-            print "Job %d received" % job.id
+            job_list = pickle.loads(data)
+            for job in job_list:
+                if job.is_finished():
+                    self.launcher.on_job_finish(job)
+                else:
+                    self.job_queue.put(job)
+
+                print "Job %d received" % job.id
+
+            client.close()

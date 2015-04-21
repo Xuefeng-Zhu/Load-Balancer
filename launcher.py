@@ -11,7 +11,7 @@ from adaptor import Adaptor
 
 __author__ = 'Xuefeng Zhu'
 
-NUM_JOB = 1024 * 32
+NUM_JOB = 1024
 
 
 class Launcher:

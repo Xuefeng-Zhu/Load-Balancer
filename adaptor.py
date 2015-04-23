@@ -40,3 +40,5 @@ class Adaptor:
                     self.transfer_manager.send_job()
 
 
+
+

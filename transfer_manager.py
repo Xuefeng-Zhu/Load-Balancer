@@ -32,8 +32,9 @@ class TransferManager:
         self.socket.bind((HOST, PORT))
 
     @thread_func
-    def send_job(self):
-        job = self.job_queue.get()
+    def send_job(self, job=None):
+        if job is None:
+            job = self.job_queue.get()
         job_p = pickle.dumps(job)
         data = zlib.compress(job_p)
         self.socket.sendto(data, (self.remote_ip, PORT))

@@ -37,6 +37,11 @@ class Launcher:
         self.transfer_manager.receive_job()
         self.state_manager.receive_state()
         self.state_manager.start()
+
+        while self.job_queue.qsize() < NUM_JOB / 2:
+            sleep(0.1)
+
+        # receive all jobs and exit the bootstrap stage
         self.work_thread.start()
 
     def allocate_jobs(self):
@@ -54,7 +59,7 @@ class Launcher:
         if self.is_master:
             self.finished_jobs.append(job)
         else:
-            self.transfer_jobs(job)
+            self.transfer_manager.send_job(job)
 
         if len(self.finished_jobs) == NUM_JOB:
             self.aggregate_jobs()

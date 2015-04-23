@@ -1,5 +1,6 @@
 import socket
 import pickle
+import zlib
 from functools import wraps
 from threading import Thread
 from time import sleep
@@ -27,41 +28,29 @@ class TransferManager:
         self.remote_ip = remote_ip
         self.launcher = launcher
 
-        self.send_socket = socket.socket()
-
-        self.recv_socket = socket.socket()
-        self.recv_socket.bind((HOST, PORT))
-        self.recv_socket.listen(5)
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket.bind((HOST, PORT))
 
     @thread_func
-    def send_job(self, job_list):
-        self.send_socket.connect((self.remote_ip, PORT))
+    def send_job(self, job=None):
+        if job is None:
+            job = self.job_queue.get()
+        job_p = pickle.dumps(job)
+        data = zlib.compress(job_p)
+        self.socket.sendto(data, (self.remote_ip, PORT))
 
-        job_list_p = pickle.dumps(job_list)
-        self.send_socket.sendall(job_list_p)
-
-        for job in job_list:
-            print "Job %d sent" % job.id
+        print "Job %d sent" % job.id
 
     @thread_func
     def receive_job(self):
         while True:
-            client, _ = self.recv_socket.accept()
-            data = []
-            while True:
-                tmp = client.recv(4096)
-                if tmp:
-                    data.append(tmp)
-                else:
-                    break
+            data, _ = self.socket.recvfrom(8192)
+            job_p = zlib.decompress(data)
+            job = pickle.loads(job_p)
+            if job.is_finished():
+                self.launcher.on_job_finish(job)
+            else:
+                self.job_queue.put(job)
 
-            job_list = pickle.loads(''.join(data))
-            for job in job_list:
-                if job.is_finished():
-                    self.launcher.on_job_finish(job)
-                else:
-                    self.job_queue.put(job)
+            print "Job %d received" % job.id
 
-                print "Job %d received" % job.id
-
-            client.close()

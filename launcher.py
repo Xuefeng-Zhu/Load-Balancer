@@ -52,17 +52,14 @@ class Launcher:
             self.job_queue.put(job)
 
     def transfer_jobs(self):
-        job_list = []
         for _ in range(NUM_JOB / 2):
-            job_list.append(self.job_queue.get())
-
-        self.transfer_manager.send_job(job_list)
+            self.transfer_manager.send_job()
 
     def on_job_finish(self, job):
         if self.is_master:
             self.finished_jobs.append(job)
         else:
-            self.transfer_jobs([job])
+            self.transfer_manager.send_job(job)
 
         if len(self.finished_jobs) == NUM_JOB:
             self.aggregate_jobs()

@@ -48,8 +48,7 @@ class Launcher:
 
     def transfer_jobs(self):
         for _ in range(NUM_JOB / 2):
-            job = self.job_queue.get()
-            self.transfer_manager.send_job(job)
+            self.transfer_manager.send_job()
 
     def on_job_finish(self, job):
         if self.is_master:

@@ -1,5 +1,6 @@
 import socket
 import pickle
+import zlib
 from functools import wraps
 from threading import Thread
 from time import sleep
@@ -34,15 +35,16 @@ class TransferManager:
     def send_job(self):
         job = self.job_queue.get()
         job_p = pickle.dumps(job)
-
-        self.socket.sendto(job_p, (self.remote_ip, PORT))
+        data = zlib.compress(job_p)
+        self.socket.sendto(data, (self.remote_ip, PORT))
 
         print "Job %d sent" % job.id
 
     @thread_func
     def receive_job(self):
         while True:
-            job_p, _ = self.socket.recvfrom(2048)
+            data, _ = self.socket.recvfrom(8192)
+            job_p = zlib.decompress(data)
             job = pickle.loads(job_p)
             if job.is_finished():
                 self.launcher.on_job_finish(job)

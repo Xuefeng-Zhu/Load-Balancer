@@ -27,5 +27,5 @@ class WorkerThread(threading.Thread):
                     time.sleep((100 - self.throttling) / 1000.0)
                     start_time = time.time()
 			
-			print "Job %d finished" % (self.current_job.id)
+            print "Job %d finished" % (self.current_job.id)
             self.launcher.on_job_finish(self.current_job)

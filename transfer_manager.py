@@ -28,8 +28,10 @@ class TransferManager:
         self.launcher = launcher
 
         self.send_socket = socket.socket()
+	self.send_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
         self.recv_socket = socket.socket()
+        self.recv_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.recv_socket.bind((HOST, PORT))
         self.recv_socket.listen(5)
 
@@ -56,6 +58,7 @@ class TransferManager:
                     break
 
             job_list = pickle.loads(''.join(data))
+            print str(job_list)
             for job in job_list:
                 if job.is_finished():
                     self.launcher.on_job_finish(job)

@@ -11,6 +11,10 @@ PORT = 12345
 
 
 def thread_func(func):
+    """
+    Decorator function for launching thread
+    """
+
     @wraps(func)
     def start_thread(*args, **kwargs):
         thread = Thread(target=func, args=args, kwargs=kwargs)
@@ -22,6 +26,9 @@ def thread_func(func):
 
 
 class StateManager:
+    """
+    Manager responsible for sending and receiving state from another node
+    """
     def __init__(self, remote_ip, adaptor=None):
         self.remote_ip = remote_ip
         self.adaptor = adaptor
@@ -30,7 +37,11 @@ class StateManager:
         self.socket.bind((HOST, PORT))
 
     @thread_func
-    def send_state(self, state):
+    def send_state(self):
+        """
+        Send local state to another node
+        """
+        state = self.adaptor.on_state_send()
         state_p = pickle.dumps(state)
 
         self.socket.sendto(state_p, (self.remote_ip, PORT))
@@ -39,6 +50,9 @@ class StateManager:
 
     @thread_func
     def receive_state(self):
+        """
+        Receive remote state from another node
+        """
         while True:
             state_p, _ = self.socket.recvfrom(2048)
             state = pickle.loads(state_p)
@@ -49,8 +63,7 @@ class StateManager:
     @thread_func
     def start(self):
         while True:
-            state = self.adaptor.on_state_send()
-            self.send_state(state)
+            self.send_state()
 
             sleep(30)
 

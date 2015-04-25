@@ -20,12 +20,14 @@ class WorkerThread(threading.Thread):
         start_time = time.time()
         while self.job_queue.qsize() > 0:
             self.current_job = self.job_queue.get()
+
+            # run job until finished
             while not self.current_job.is_finished():
                 if time.time() - start_time < self.throttling / 1000.0:
                     self.current_job.execute_next()
                 else:
                     time.sleep((100 - self.throttling) / 1000.0)
                     start_time = time.time()
-			
-            print "Job %d finished" % (self.current_job.id)
+
+            print "Job %d finished" % self.current_job.id
             self.launcher.on_job_finish(self.current_job)

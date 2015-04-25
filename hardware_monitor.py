@@ -8,15 +8,17 @@ __author__ = 'Dan'
 
 
 class HardwareMonitor(object):
-    """ Monitors the system performance of the node,
-     used for the transfer policy.
+    """
+    Monitors the system performance of the node,
+    used for the transfer policy.
     """
     SAMPLES_PER_SEC = 5
     NUM_SAMPLES = 10
     NETWORK_DELAY = 0
 
     def __init__(self, worker_thread):
-        """ Initializes the sample collections and threads
+        """
+        Initializes the sample collections and threads
         necessary for scheduling.
         """
         super(HardwareMonitor, self).__init__()
@@ -28,7 +30,8 @@ class HardwareMonitor(object):
         self.worker_thread = worker_thread
 
     def start(self):
-        """ Starts the monitor thread and prevents it from ending
+        """
+        Starts the monitor thread and prevents it from ending
         without manually calling stop.
         """
         self.monitoring = True
@@ -36,14 +39,16 @@ class HardwareMonitor(object):
         self.monitor_thread.start()
 
     def stop(self):
-        """ Causes the monitor thread to finish on next execution.
+        """
+        Causes the monitor thread to finish on next execution.
         Safer than killing the thread outright.
         """
         self.monitoring = False
         self.cpu_samples = [0.0] * HardwareMonitor.NUM_SAMPLES
 
     def throttle(self, value):
-        """ Interface for throttling the worker thread through 
+        """
+        Interface for throttling the worker thread through
         the hardware monitor. 
         """
         self.worker_thread.throttling = value
@@ -56,8 +61,7 @@ class HardwareMonitor(object):
             scheduler.run()
         else:
             self.cpu_samples[self.current_sample] = psutil.cpu_percent()
-            self.current_sample = (
-                self.current_sample + 1) % HardwareMonitor.NUM_SAMPLES
+            self.current_sample = (self.current_sample + 1) % HardwareMonitor.NUM_SAMPLES
 
             if self.monitoring:
                 scheduler.enter(

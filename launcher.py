@@ -15,6 +15,10 @@ NUM_JOB = 1024
 
 
 class Launcher:
+    """
+    The initiator of the whole program
+    """
+
     def __init__(self, is_master, remote_ip, vector):
         self.is_master = is_master
         self.vector = vector
@@ -29,6 +33,9 @@ class Launcher:
                                self.transfer_manager, self.state_manager, self.hardware_monitor)
 
     def bootstrap(self):
+        """
+        Define the behavior for bootstrap phase
+        """
         if self.is_master:
             self.allocate_jobs()
             self.transfer_jobs()
@@ -38,6 +45,7 @@ class Launcher:
         self.state_manager.receive_state()
         self.state_manager.start()
 
+        # wait until receiving half the job
         while self.job_queue.qsize() < NUM_JOB / 2:
             sleep(0.1)
 
@@ -45,6 +53,10 @@ class Launcher:
         self.work_thread.start()
 
     def allocate_jobs(self):
+        """
+        Divide the vector into NUM_JOB jobs, and put jobs into job
+        queue
+        """
         job_size = len(self.vector) / NUM_JOB
         for i in range(NUM_JOB):
             pos = i * job_size
@@ -52,19 +64,33 @@ class Launcher:
             self.job_queue.put(job)
 
     def transfer_jobs(self):
+        """
+        Send half of jobs to slave node through transfer manager
+        """
         for _ in range(NUM_JOB / 2):
             self.transfer_manager.send_job()
 
     def on_job_finish(self, job):
+        """
+        Callback function when a job finishes
+        :param job: Job Object
+        """
+
+        # put the job into finished job if in master node
+        # send the job to master node if in slave node
         if self.is_master:
             self.finished_jobs.append(job)
         else:
             self.transfer_manager.send_job(job)
 
+        # start to aggregate jobs when all jobs finished
         if len(self.finished_jobs) == NUM_JOB:
             self.aggregate_jobs()
 
     def aggregate_jobs(self):
+        """
+        Map the data back to vector
+        """
         for job in self.finished_jobs:
             pos = job.pos
             for data in job.work_data:
@@ -73,20 +99,29 @@ class Launcher:
 
 
 def load_config():
+    """
+    Load the config information in config file
+    """
     with open('config.json') as f:
         return json.load(f)
 
 
 def print_data(vector):
+    """
+    Print value stored in the vector
+    :param vector:
+    """
     for i, v in enumerate(vector):
         print "A[%d]= %d" % (i, v)
 
 
 if __name__ == '__main__':
+    # instructor for running the program
     if len(sys.argv) != 2:
         print "Usage: python launcher.py M/S"
         exit(0)
 
+    # Judge if master or slave
     if sys.argv[1] == "M":
         is_master = True
     elif sys.argv[1] == "S":
@@ -108,6 +143,7 @@ if __name__ == '__main__':
 
     launcher.work_thread.join()
 
+    # wait until all jobs finish
     while is_master and len(launcher.finished_jobs) != NUM_JOB:
         sleep(1)
 

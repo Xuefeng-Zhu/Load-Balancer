@@ -12,6 +12,10 @@ PORT = 12346
 
 
 def thread_func(func):
+    """
+    Decorator function for launching thread
+    """
+
     @wraps(func)
     def start_thread(*args, **kwargs):
         thread = Thread(target=func, args=args, kwargs=kwargs)
@@ -23,6 +27,10 @@ def thread_func(func):
 
 
 class TransferManager:
+    """
+    Manager responsible for sending and receiving jobs from another node
+    """
+
     def __init__(self, job_queue, remote_ip, launcher):
         self.job_queue = job_queue
         self.remote_ip = remote_ip
@@ -33,9 +41,14 @@ class TransferManager:
 
     @thread_func
     def send_job(self, job=None):
+        """
+        Send job to another node
+        """
         if job is None:
             job = self.job_queue.get()
         job_p = pickle.dumps(job)
+
+        # compress data
         data = zlib.compress(job_p)
         self.socket.sendto(data, (self.remote_ip, PORT))
 
@@ -43,10 +56,17 @@ class TransferManager:
 
     @thread_func
     def receive_job(self):
+        """
+        Receive job from another node
+        """
         while True:
             data, _ = self.socket.recvfrom(8192)
+
+            # decompress data
             job_p = zlib.decompress(data)
             job = pickle.loads(job_p)
+
+            # check if job has been finished
             if job.is_finished():
                 self.launcher.on_job_finish(job)
             else:

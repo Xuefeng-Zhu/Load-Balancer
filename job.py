@@ -2,7 +2,8 @@ __author__ = 'Dan'
 
 
 class Job(object):
-    """ A simple data structure which contains the data
+    """
+    A simple data structure which contains the data
     and handles the workload for MP4.
     """
     ITER_COUNT = 1000

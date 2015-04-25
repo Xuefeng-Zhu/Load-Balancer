@@ -8,6 +8,9 @@ from Queue import Queue
 from launcher import Launcher
 __author__ = 'Dan'
 
+class MockLauncher:
+    def on_job_finish(self, job):
+        pass
 
 class WorkerThreadExecutionTest(unittest.TestCase):
     def testWorkerThreadExecutesJob(self):
@@ -15,7 +18,7 @@ class WorkerThreadExecutionTest(unittest.TestCase):
         test_job = Job(0, 0, work_data)
         job_queue = Queue()
         job_queue.put(test_job)
-        launcher = Launcher(True, None, None)
+        launcher = MockLauncher()
         worker_thread = WorkerThread(job_queue, launcher)
 
         worker_thread.run()
@@ -33,7 +36,8 @@ class WorkerThreadExecutionTest(unittest.TestCase):
         job_queue = Queue()
         job_queue.put(test_jobs[0])
         job_queue.put(test_jobs[1])
-        worker_thread = WorkerThread(job_queue, None)
+        launcher = MockLauncher()
+        worker_thread = WorkerThread(job_queue, launcher)
 
         try:
             worker_thread.run()
@@ -44,7 +48,7 @@ class WorkerThreadExecutionTest(unittest.TestCase):
             pass
 
         self.assertEqual(int(test_jobs[0].work_data[0]), 1112)
-        self.assertEqual(int(test_jobs[1].work_data[0]), 0)
+        self.assertEqual(int(test_jobs[1].work_data[0]), 1111)
 
     def testWorkerThreadThrottleIncreasesExecutionTime(self):
         work_data_1 = [1.111111] * 100
@@ -53,7 +57,8 @@ class WorkerThreadExecutionTest(unittest.TestCase):
         job_queue = Queue()
         job_queue.put(test_jobs[0])
         job_queue.put(test_jobs[1])
-        worker_thread = WorkerThread(job_queue, None)
+        launcher = MockLauncher()
+        worker_thread = WorkerThread(job_queue, launcher)
 
         start_time = time.time()
         try:
@@ -72,7 +77,8 @@ class WorkerThreadExecutionTest(unittest.TestCase):
         job_queue = Queue()
         job_queue.put(test_jobs[0])
         job_queue.put(test_jobs[1])
-        worker_thread = WorkerThread(job_queue, None)
+        launcher = MockLauncher()
+        worker_thread = WorkerThread(job_queue, launcher)
         worker_thread.throttling = 50
 
         start_time = time.time()

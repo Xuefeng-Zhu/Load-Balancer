@@ -1,13 +1,11 @@
-from job_queue import JobQueue
-
-__author__ = 'Dan'
-
 import unittest
 import time
 
 from job import Job
 from worker_thread import WorkerThread
 from hardware_monitor import HardwareMonitor
+
+__author__ = 'Dan'
 
 
 class HardwareMonitorUsageTest(unittest.TestCase):
@@ -81,6 +79,7 @@ class HardwareMonitorUsageTest(unittest.TestCase):
         monitor = HardwareMonitor(None)
         monitor.calculate_network_delay("www.google.com")
         assert HardwareMonitor.NETWORK_DELAY > 0
+
 
 if __name__ == '__main__':
     unittest.main()

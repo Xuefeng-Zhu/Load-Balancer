@@ -18,10 +18,10 @@ class Job(object):
 
     def execute_next(self):
         """ Does the MP4 computation. Do not optimize. """
-        for _ in range(Job.ITER_COUNT):
-            self.work_data[self.current_element] += 1.111111
-
         if self.current_element < len(self.work_data):
+            for _ in range(Job.ITER_COUNT):
+                self.work_data[self.current_element] += 1.111111
+
             self.current_element += 1
 
     def is_finished(self):

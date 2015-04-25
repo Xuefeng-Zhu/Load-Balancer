@@ -1,13 +1,11 @@
 import math
-from job_queue import JobQueue
-
-__author__ = 'Dan'
-
 import unittest
 import time
 
 from job import Job
 from worker_thread import WorkerThread
+
+__author__ = 'Dan'
 
 
 class WorkerThreadExecutionTest(unittest.TestCase):

@@ -3,7 +3,6 @@ import pickle
 import zlib
 from functools import wraps
 from threading import Thread
-from time import sleep
 
 __author__ = 'Xuefeng Zhu'
 

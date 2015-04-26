@@ -28,7 +28,7 @@ class HardwareMonitorUsageTest(unittest.TestCase):
         assert cpu_usage <= 100.0
 
     def testHardwareMonitorCpuUsageIncreasesWithWorkload(self):
-        work_data = [1.111111] * 1000
+        work_data = [1.111111] * 10000
         test_job = Job(0, 0, work_data)
         job_queue = Queue()
         job_queue.put(test_job)
@@ -50,8 +50,8 @@ class HardwareMonitorUsageTest(unittest.TestCase):
         assert dirty_cpu_usage > clean_cpu_usage
 
     def testHardwareMonitorCpuUsageDecreasesWithThrottling(self):
-        work_data_1 = [1.111111] * 1000
-        work_data_2 = [1.111111] * 1000
+        work_data_1 = [1.111111] * 10000
+        work_data_2 = [1.111111] * 10000
         test_jobs = [Job(0, 0, work_data_1), Job(0, 0, work_data_2)]
         job_queue = Queue()
         job_queue.put(test_jobs[0])
@@ -70,8 +70,8 @@ class HardwareMonitorUsageTest(unittest.TestCase):
         full_cpu_usage = monitor.get_cpu_usage()
         monitor.stop()
 
-        work_data_1 = [1.111111] * 1000
-        work_data_2 = [1.111111] * 1000
+        work_data_1 = [1.111111] * 10000
+        work_data_2 = [1.111111] * 10000
         test_jobs = [Job(0, 0, work_data_1), Job(0, 0, work_data_2)]
         job_queue = Queue()
         job_queue.put(test_jobs[0])

@@ -54,6 +54,9 @@ class Adaptor:
         self.send_init()
 
     def sender_init(self):
+        """
+        Initiate the transfer job based on local state
+        """
         if self.job_queue.qsize() > JOB_QUEUE_MAX:
             if self.remote_state.num_jobs < JOB_QUEUE_MAX:
                 num_transfer_jobs = min(self.job_queue.qsize() - JOB_QUEUE_MAX,
@@ -62,9 +65,19 @@ class Adaptor:
                     self.transfer_manager.send_job()
 
     def receiver_init(self):
+        """
+        Initiate the transfer job based on remote state
+        """
         if self.remote_state.num_jobs < JOB_QUEUE_MIN:
             if self.job_queue.qsize() > JOB_QUEUE_MIN:
                 num_transfer_jobs = min(self.job_queue.qsize() - JOB_QUEUE_MIN,
                                         JOB_QUEUE_MIN - self.remote_state.num_jobs)
                 for _ in range(num_transfer_jobs):
                     self.transfer_manager.send_job()
+
+    def symmetric_init(self):
+        """
+        Apply both sender and receiver init
+        """
+        self.sender_init()
+        self.receiver_init()

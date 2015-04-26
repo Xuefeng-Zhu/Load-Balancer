@@ -44,9 +44,7 @@ class LoadBalance(toga.App):
 
 
         split = toga.SplitContainer()
-
         split.content = [self.table, container]
-
         self.main_window.content = split
 
     def change_throttle(self, _):

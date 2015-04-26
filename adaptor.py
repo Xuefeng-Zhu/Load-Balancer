@@ -2,13 +2,15 @@ from state import State
 
 __author__ = 'Xuefeng'
 
-JOB_QUEUE_LIMIT = 200
+JOB_QUEUE_MAX = 200
+JOB_QUEUE_MIN = 20
 
 
 class Adaptor:
     """
     Adaptor works as a central hub to communicate between different componenet
     """
+
     def __init__(self, work_thread, job_queue, transfer_manager,
                  state_manager, hardware_monitor):
         self.work_thread = work_thread
@@ -49,13 +51,20 @@ class Adaptor:
         Callback funciton when remote state is update.
         This function also triggers the transfer policy
         """
-        if self.job_queue.qsize() > JOB_QUEUE_LIMIT:
-            if self.remote_state.num_jobs < JOB_QUEUE_LIMIT:
-                num_transfer_jobs = min(self.job_queue.qsize()-JOB_QUEUE_LIMIT,
-                                        JOB_QUEUE_LIMIT-self.remote_state.num_jobs)
+        self.send_init()
+
+    def sender_init(self):
+        if self.job_queue.qsize() > JOB_QUEUE_MAX:
+            if self.remote_state.num_jobs < JOB_QUEUE_MAX:
+                num_transfer_jobs = min(self.job_queue.qsize() - JOB_QUEUE_MAX,
+                                        JOB_QUEUE_MAX - self.remote_state.num_jobs)
                 for _ in range(num_transfer_jobs):
                     self.transfer_manager.send_job()
 
-
-
-
+    def receiver_init(self):
+        if self.remote_state.num_jobs < JOB_QUEUE_MIN:
+            if self.job_queue.qsize() > JOB_QUEUE_MIN:
+                num_transfer_jobs = min(self.job_queue.qsize() - JOB_QUEUE_MIN,
+                                        JOB_QUEUE_MIN - self.remote_state.num_jobs)
+                for _ in range(num_transfer_jobs):
+                    self.transfer_manager.send_job()

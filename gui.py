@@ -5,17 +5,43 @@ __author__ = 'Xuefeng Zhu'
 
 class LoadBalance(toga.App):
     def startup(self):
-        container = toga.Container()
-        button = toga.Button('Hello world', on_press=self.button_handler)
-
         self.table = toga.Table(['Message'])
 
-        container.add(button)
+        container = toga.Container()
 
-        container.constrain(button.TOP == container.TOP + 50)
-        container.constrain(button.LEADING == container.LEADING + 50)
-        container.constrain(button.TRAILING + 50 == container.TRAILING)
-        container.constrain(button.BOTTOM + 50 < container.BOTTOM)
+        throttle_label = toga.Label('Throttling', alignment=toga.RIGHT_ALIGNED)
+        throttle_button = toga.Button('Update', on_press=self.change_throttle)
+        self.throttle_input = toga.TextInput()
+
+        progress_label = toga.Label('Job Progress', alignment=toga.RIGHT_ALIGNED)
+        self.progress_bar = toga.ProgressBar(1024, 0)
+
+        container.add(throttle_label)
+        container.add(throttle_button)
+        container.add(self.throttle_input)
+
+        container.add(progress_label)
+        container.add(self.progress_bar)
+
+        # throttle constrain
+        container.constrain(throttle_label.TOP == container.TOP + 10)
+        container.constrain(throttle_label.LEADING == container.LEADING + 10)
+
+        container.constrain(self.throttle_input.WIDTH == 100)
+        container.constrain(self.throttle_input.TOP == throttle_label.TOP)
+        container.constrain(self.throttle_input.LEADING == throttle_label.TRAILING + 10)
+
+        container.constrain(throttle_button.TOP == throttle_label.TOP)
+        container.constrain(throttle_button.LEADING == self.throttle_input.TRAILING + 10)
+
+        # job progress constrain
+        container.constrain(progress_label.TOP == throttle_label.BOTTOM + 20)
+        container.constrain(progress_label.LEADING == throttle_label.LEADING)
+
+        container.constrain(self.progress_bar.WIDTH == 200)
+        container.constrain(self.progress_bar.TOP == progress_label.TOP)
+        container.constrain(self.progress_bar.LEADING == progress_label.TRAILING + 10)
+
 
         split = toga.SplitContainer()
 
@@ -23,7 +49,7 @@ class LoadBalance(toga.App):
 
         self.main_window.content = split
 
-    def button_handler(self, _):
+    def change_throttle(self, _):
         self.table.insert(1, 'test')
         print "test"
 

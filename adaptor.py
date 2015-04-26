@@ -51,7 +51,7 @@ class Adaptor:
         Callback funciton when remote state is update.
         This function also triggers the transfer policy
         """
-        self.send_init()
+        self.sender_init()
 
     def sender_init(self):
         """

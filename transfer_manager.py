@@ -52,7 +52,7 @@ class TransferManager:
         print "Job %d sent" % job.id
 
     @thread_func
-    def send_job(self, num_jobs):
+    def send_jobs(self, num_jobs):
         """
         Send jobs to another node
         """

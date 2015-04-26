@@ -6,19 +6,22 @@ __author__ = 'Xuefeng Zhu'
 
 
 class LoadBalance(toga.App):
-    def startup(self):
+    def __init__(self, name, app_id):
+        super(LoadBalance, self).__init__(name, app_id)
+
         self.launcher = None
 
         self.table = toga.Table(['Message'])
+        self.throttle_input = toga.TextInput()
+        self.progress_bar = toga.ProgressBar(1024, 0)
 
+    def startup(self):
         container = toga.Container()
 
         throttle_label = toga.Label('Throttling', alignment=toga.RIGHT_ALIGNED)
         throttle_button = toga.Button('Update', on_press=self.change_throttle)
-        self.throttle_input = toga.TextInput()
 
         progress_label = toga.Label('Job Progress', alignment=toga.RIGHT_ALIGNED)
-        self.progress_bar = toga.ProgressBar(1024, 0)
 
         container.add(throttle_label)
         container.add(throttle_button)

@@ -50,8 +50,8 @@ class Launcher:
         self.state_manager.receive_state()
         self.state_manager.start()
 
-        # wait until receiving half the job
-        while self.job_queue.qsize() < NUM_JOB / 2:
+        # wait until receiving at least 8 jobs
+        while self.job_queue.qsize() < 8:
             sleep(0.1)
 
         # receive all jobs and exit the bootstrap stage
@@ -90,6 +90,7 @@ class Launcher:
         # start to aggregate jobs when all jobs finished
         if len(self.finished_jobs) == NUM_JOB:
             self.aggregate_jobs()
+            self.print_data()
 
     def aggregate_jobs(self):
         """
@@ -143,13 +144,6 @@ if __name__ == '__main__':
     launcher = Launcher(is_master, remote_ip)
     launcher.bootstrap()
 
-    # launcher.work_thread.join()
-    #
-    # # wait until all jobs finish
-    # while is_master and len(launcher.finished_jobs) != NUM_JOB:
-    #     sleep(1)
-    #
-    # if is_master:
-    #     launcher.print_data()
+    launcher.work_thread.join()
 
     print "All jobs are finished!"

@@ -87,6 +87,10 @@ class Launcher:
         else:
             self.transfer_manager.send_job(job)
 
+        # inform gui
+        if self.gui:
+            self.gui.on_job_finish()
+
         # start to aggregate jobs when all jobs finished
         if len(self.finished_jobs) == NUM_JOB:
             self.aggregate_jobs()
@@ -145,5 +149,10 @@ if __name__ == '__main__':
     launcher.bootstrap()
 
     launcher.work_thread.join()
+
+    # wait until all jobs finish
+    while is_master and len(launcher.finished_jobs) != NUM_JOB:
+        sleep(1)
+
 
     print "All jobs are finished!"

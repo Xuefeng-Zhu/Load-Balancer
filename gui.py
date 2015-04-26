@@ -1,10 +1,14 @@
 import toga
+import sys
+from launcher import Launcher, load_config
 
 __author__ = 'Xuefeng Zhu'
 
 
 class LoadBalance(toga.App):
     def startup(self):
+        self.launcher = None
+
         self.table = toga.Table(['Message'])
 
         container = toga.Container()
@@ -48,10 +52,46 @@ class LoadBalance(toga.App):
         self.main_window.content = split
 
     def change_throttle(self, _):
-        self.table.insert(1, 'test')
-        print "test"
+        value = int(self.throttle_input.value)
+        if value > 0:
+            self.launcher.hardware_monitor.throttle(value)
+            toga.Dialog.info('Success', 'Throttle value has been updated!')
+        else:
+            toga.Dialog.info('Error', 'Throttle input is invalid!')
+
+    def on_message(self, message):
+        self.table.insert(None, message)
+
+    def on_job_finish(self):
+        self.progress_bar.value += 1
 
 
+if __name__ == '__main__':
+    # instructor for running the program
+    if len(sys.argv) != 2:
+        print "Usage: python gui.py M/S"
+        exit(0)
 
-app = LoadBalance('LoadBalance', 'cs423.load_balance')
-app.main_loop()
+    # Judge if master or slave
+    if sys.argv[1] == "M":
+        is_master = True
+    elif sys.argv[1] == "S":
+        is_master = False
+    else:
+        print "Please provide valid argument"
+        exit(0)
+
+    config = load_config()
+    if is_master:
+        remote_ip = config["slave"]
+
+    else:
+        remote_ip = config["master"]
+
+    gui = LoadBalance('LoadBalance', 'cs423.load_balance')
+
+    launcher = Launcher(is_master, remote_ip, gui)
+    launcher.bootstrap()
+
+    gui.launcher = launcher
+    gui.main_loop()

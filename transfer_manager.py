@@ -49,7 +49,10 @@ class TransferManager:
         data = zlib.compress(job_p)
         self.socket.sendto(data, (self.remote_ip, PORT))
 
-        print "Job %d sent" % job.id
+        message = "Job %d received" % job.id
+        print message
+        if self.launcher.gui:
+            self.launcher.gui.on_message(message)
 
     @thread_func
     def send_jobs(self, num_jobs):
@@ -64,7 +67,10 @@ class TransferManager:
             data = zlib.compress(job_p)
             self.socket.sendto(data, (self.remote_ip, PORT))
 
-            print "Job %d sent" % job.id
+            message = "Job %d received" % job.id
+            print message
+            if self.launcher.gui:
+                self.launcher.gui.on_message(message)
 
     @thread_func
     def receive_job(self):
@@ -84,5 +90,8 @@ class TransferManager:
             else:
                 self.job_queue.put(job)
 
-            print "Job %d received" % job.id
+            message = "Job %d received" % job.id
+            print message
+            if self.launcher.gui:
+                self.launcher.gui.on_message(message)
 

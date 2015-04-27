@@ -6,7 +6,7 @@ class Job(object):
     A simple data structure which contains the data
     and handles the workload for MP4.
     """
-    ITER_COUNT = 100
+    ITER_COUNT = 10
 
     def __init__(self, id=0, pos=0, work_data=[]):
         """ Initializes private variables and work data. """
@@ -20,7 +20,7 @@ class Job(object):
         """ Does the MP4 computation. Do not optimize. """
         if self.current_element < len(self.work_data):
             for _ in range(Job.ITER_COUNT):
-                self.work_data[self.current_element] += 11.111111
+                self.work_data[self.current_element] += 111.1111
 
             self.current_element += 1
 

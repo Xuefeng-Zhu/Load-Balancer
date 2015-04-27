@@ -26,7 +26,7 @@ class Launcher:
         self.finished_jobs = []
 
         if is_master:
-            self.vector = [1.111111] * 1024 * 1024 * 32
+            self.vector = [111.1111] * 1024 * 1024 * 32
         else:
             self.vector = None
 

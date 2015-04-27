@@ -49,7 +49,7 @@ class TransferManager:
         data = zlib.compress(job_p)
         self.socket.sendto(data, (self.remote_ip, PORT))
 
-        message = "Job %d received" % job.id
+        message = "Job %d sent" % job.id
         print message
         if self.launcher.gui:
             self.launcher.gui.on_message(message)
@@ -67,7 +67,7 @@ class TransferManager:
             data = zlib.compress(job_p)
             self.socket.sendto(data, (self.remote_ip, PORT))
 
-            message = "Job %d received" % job.id
+            message = "Job %d sent" % job.id
             print message
             if self.launcher.gui:
                 self.launcher.gui.on_message(message)

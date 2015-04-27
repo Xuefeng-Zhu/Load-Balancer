@@ -31,10 +31,12 @@ class LoadBalance(toga.App):
         container.add(self.progress_bar)
 
         # throttle constrain
-        container.constrain(throttle_label.TOP == container.TOP + 10)
+        container.constrain(throttle_label.WIDTH == 100)
+        container.constrain(throttle_label.TOP == container.TOP + 40)
         container.constrain(throttle_label.LEADING == container.LEADING + 10)
 
         container.constrain(self.throttle_input.WIDTH == 100)
+        container.constrain(self.throttle_input.HEIGHT == 20)
         container.constrain(self.throttle_input.TOP == throttle_label.TOP)
         container.constrain(self.throttle_input.LEADING == throttle_label.TRAILING + 10)
 
@@ -42,10 +44,12 @@ class LoadBalance(toga.App):
         container.constrain(throttle_button.LEADING == self.throttle_input.TRAILING + 10)
 
         # job progress constrain
+        container.constrain(progress_label.WIDTH == throttle_label.WIDTH)
         container.constrain(progress_label.TOP == throttle_label.BOTTOM + 20)
         container.constrain(progress_label.LEADING == throttle_label.LEADING)
 
         container.constrain(self.progress_bar.WIDTH == 200)
+        container.constrain(self.progress_bar.HEIGHT == 20)
         container.constrain(self.progress_bar.TOP == progress_label.TOP)
         container.constrain(self.progress_bar.LEADING == progress_label.TRAILING + 10)
 

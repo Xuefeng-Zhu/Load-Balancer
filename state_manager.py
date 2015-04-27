@@ -65,7 +65,7 @@ class StateManager:
         while True:
             self.send_state()
 
-            sleep(30)
+            sleep(10)
 
 
 

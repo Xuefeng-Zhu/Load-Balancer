@@ -130,7 +130,7 @@ def load_config():
 
 
 if __name__ == '__main__':
-    # instructor for running the program
+    # instruction for running the program
     if len(sys.argv) != 2:
         print "Usage: python launcher.py M/S"
         exit(0)

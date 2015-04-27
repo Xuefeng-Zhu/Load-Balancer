@@ -1,80 +1,67 @@
-import toga
+import Tkinter as tk
+import ttk
+from Tkinter import *
+import tkMessageBox
 import sys
 from launcher import Launcher, load_config
 
-__author__ = 'Xuefeng Zhu'
+__author__ = 'Yanwen and Xuefeng'
 
 
-class LoadBalance(toga.App):
-    def __init__(self, name, app_id):
-        super(LoadBalance, self).__init__(name, app_id)
+class LoadBalance(tk.Tk):
+    def __init__(self, *args, **kwargs):
+        tk.Tk.__init__(self, *args, **kwargs)
 
         self.launcher = None
+        self.is_start = False
 
-        self.table = toga.Table(['Message'])
-        self.throttle_input = toga.TextInput()
-        self.progress_bar = toga.ProgressBar(1024, 0)
+        style = ttk.Style()
+        style.configure("BW.TLabel", foreground="black", background="white")
+        self.start_button = ttk.Button(text="Start", command=self.start_launcher)
+        self.start_button.pack()
 
-    def startup(self):
-        container = toga.Container()
+        self.label = ttk.Label(text="Enter the Throttling Value:", style="BW.TLabel")
+        self.label.pack()
+        self.entry = ttk.Entry(self)
+        self.entry.pack()
+        self.button = ttk.Button(text="change", command=self.change_throttle)
+        self.button.pack()
 
-        throttle_label = toga.Label('Throttling', alignment=toga.RIGHT_ALIGNED)
-        throttle_button = toga.Button('Update', on_press=self.change_throttle)
+        self.progress_label = ttk.Label(text="Job Progress:", style="BW.TLabel")
+        self.progress = ttk.Progressbar(self, orient="horizontal",
+                                        length=200, mode="determinate")
+        self.progress["maximum"] = 1024
+        self.progress["value"] = 0
+        self.progress.pack()
 
-        progress_label = toga.Label('Job Progress', alignment=toga.RIGHT_ALIGNED)
+        self.mess_label = ttk.Label(text="Message:", style="BW.TLabel")
+        self.mess_label.pack()
+        self.table = Listbox()
+        self.table.pack()
 
-        container.add(throttle_label)
-        container.add(throttle_button)
-        container.add(self.throttle_input)
+    def start_launcher(self):
+        if not self.is_start:
+            self.is_start = True
+            self.mess_label.text = "dsds"
+            self.launcher.bootstrap()
 
-        container.add(progress_label)
-        container.add(self.progress_bar)
-
-        # throttle constrain
-        container.constrain(throttle_label.WIDTH == 100)
-        container.constrain(throttle_label.TOP == container.TOP + 40)
-        container.constrain(throttle_label.LEADING == container.LEADING + 10)
-
-        container.constrain(self.throttle_input.WIDTH == 100)
-        container.constrain(self.throttle_input.HEIGHT == 20)
-        container.constrain(self.throttle_input.TOP == throttle_label.TOP)
-        container.constrain(self.throttle_input.LEADING == throttle_label.TRAILING + 10)
-
-        container.constrain(throttle_button.TOP == throttle_label.TOP)
-        container.constrain(throttle_button.LEADING == self.throttle_input.TRAILING + 10)
-
-        # job progress constrain
-        container.constrain(progress_label.WIDTH == throttle_label.WIDTH)
-        container.constrain(progress_label.TOP == throttle_label.BOTTOM + 20)
-        container.constrain(progress_label.LEADING == throttle_label.LEADING)
-
-        container.constrain(self.progress_bar.WIDTH == 200)
-        container.constrain(self.progress_bar.HEIGHT == 20)
-        container.constrain(self.progress_bar.TOP == progress_label.TOP)
-        container.constrain(self.progress_bar.LEADING == progress_label.TRAILING + 10)
-
-
-        split = toga.SplitContainer()
-        split.content = [self.table, container]
-        self.main_window.content = split
-
-    def change_throttle(self, _):
-        value = int(self.throttle_input.value)
+    def change_throttle(self):
+        value = int(self.entry.get())
         if value > 0:
             self.launcher.hardware_monitor.throttle(value)
-            toga.Dialog.info('Success', 'Throttle value has been updated!')
+            tkMessageBox.showinfo('Success', 'Throttle value has been updated!')
         else:
-            toga.Dialog.info('Error', 'Throttle input is invalid!')
-
-    def on_message(self, message):
-        self.table.insert(None, message)
+            tkMessageBox.showinfo('Error', 'Throttle input is invalid!')
 
     def on_job_finish(self):
-        self.progress_bar.value += 1
+        self.progress["value"] += 1
+
+    def on_message(self, message):
+        self.table.insert(0, message)
 
 
 if __name__ == '__main__':
-    # instructor for running the program
+    # instruction for running the program
     if len(sys.argv) != 2:
         print "Usage: python gui.py M/S"
         exit(0)
@@ -95,10 +82,8 @@ if __name__ == '__main__':
     else:
         remote_ip = config["master"]
 
-    gui = LoadBalance('LoadBalance', 'cs423.load_balance')
-
+    gui = LoadBalance()
     launcher = Launcher(is_master, remote_ip, gui)
-    launcher.bootstrap()
-
     gui.launcher = launcher
-    gui.main_loop()
+
+    gui.mainloop()

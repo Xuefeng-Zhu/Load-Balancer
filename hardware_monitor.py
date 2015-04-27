@@ -16,7 +16,7 @@ class HardwareMonitor(object):
     NUM_SAMPLES = 10
     NETWORK_DELAY = 0
 
-    def __init__(self, worker_thread):
+    def __init__(self, worker_threads):
         """
         Initializes the sample collections and threads
         necessary for scheduling.
@@ -27,7 +27,7 @@ class HardwareMonitor(object):
         self.current_sample = 0
         self.monitor_thread = None
 
-        self.worker_thread = worker_thread
+        self.worker_threads = worker_threads
 
     def start(self):
         """
@@ -51,7 +51,8 @@ class HardwareMonitor(object):
         Interface for throttling the worker thread through
         the hardware monitor. 
         """
-        self.worker_thread.throttling = value
+        for worker_thread in self.worker_threads:
+            worker_thread.throttling = value
 
     def record_cpu(self, scheduler=None):
         """ Performs a system call to record another sample of cpu utilization. """

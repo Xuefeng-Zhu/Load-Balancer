@@ -53,7 +53,7 @@ class Adaptor:
         Callback function when remote state is update.
         This function also triggers the transfer policy
         """
-        self.sender_init()
+        self.sender_init_throttle()
 
     def sender_init(self):
         """
@@ -79,9 +79,9 @@ class Adaptor:
         """
         Initiate the transfer job based on remote state
         """
-        update_amount = math.fabs(self.remote_state.num_jobs - self.job_queue.qsize())
+        update_amount = self.job_queue.qsize() - self.remote_state.num_jobs
         if update_amount > JOB_QUEUE_MAX_DIFF:
-            num_transfer_jobs = update_amount * self.remote_state.throttling / 100
+            num_transfer_jobs = update_amount * self.remote_state.throttling / self.local_state.throttling
             actual_transfer_jobs = min(num_transfer_jobs, self.job_queue.qsize())
             self.transfer_manager.send_jobs(actual_transfer_jobs)
 

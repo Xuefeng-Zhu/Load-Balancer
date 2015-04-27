@@ -39,19 +39,38 @@ class TransferManager:
         self.socket.bind((HOST, PORT))
 
     @thread_func
-    def send_job(self, job=None):
+    def send_job(self, job):
         """
         Send job to another node
         """
-        if job is None:
-            job = self.job_queue.get()
         job_p = pickle.dumps(job)
 
         # compress data
         data = zlib.compress(job_p)
         self.socket.sendto(data, (self.remote_ip, PORT))
 
-        print "Job %d sent" % job.id
+        message = "Job %d sent" % job.id
+        print message
+        if self.launcher.gui:
+            self.launcher.gui.on_message(message)
+
+    @thread_func
+    def send_jobs(self, num_jobs):
+        """
+        Send jobs to another node
+        """
+        for _ in range(num_jobs):
+            job = self.job_queue.get()
+            job_p = pickle.dumps(job)
+
+            # compress data
+            data = zlib.compress(job_p)
+            self.socket.sendto(data, (self.remote_ip, PORT))
+
+            message = "Job %d sent" % job.id
+            print message
+            if self.launcher.gui:
+                self.launcher.gui.on_message(message)
 
     @thread_func
     def receive_job(self):
@@ -71,5 +90,8 @@ class TransferManager:
             else:
                 self.job_queue.put(job)
 
-            print "Job %d received" % job.id
+            message = "Job %d received" % job.id
+            print message
+            if self.launcher.gui:
+                self.launcher.gui.on_message(message)
 

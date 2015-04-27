@@ -20,10 +20,15 @@ class Launcher:
     The initiator of the whole program
     """
 
-    def __init__(self, is_master, remote_ip, vector):
+    def __init__(self, is_master, remote_ip, gui=None):
         self.is_master = is_master
-        self.vector = vector
+        self.gui = gui
         self.finished_jobs = []
+
+        if is_master:
+            self.vector = [1.111111] * 1024 * 1024 * 32
+        else:
+            self.vector = None
 
         self.job_queue = Queue()
         self.work_threads = []
@@ -50,8 +55,8 @@ class Launcher:
         self.state_manager.receive_state()
         self.state_manager.start()
 
-        # wait until receiving half the job
-        while self.job_queue.qsize() < NUM_JOB / 2:
+        # wait until receiving at least 8 jobs
+        while self.job_queue.qsize() < 8:
             sleep(0.1)
 
         # receive all jobs and exit the bootstrap stage
@@ -73,8 +78,7 @@ class Launcher:
         """
         Send half of jobs to slave node through transfer manager
         """
-        for _ in range(NUM_JOB / 2):
-            self.transfer_manager.send_job()
+        self.transfer_manager.send_jobs(NUM_JOB / 2)
 
     def on_job_finish(self, job):
         """
@@ -89,9 +93,14 @@ class Launcher:
         else:
             self.transfer_manager.send_job(job)
 
+        # inform gui
+        if self.gui:
+            self.gui.on_job_finish()
+
         # start to aggregate jobs when all jobs finished
         if len(self.finished_jobs) == NUM_JOB:
             self.aggregate_jobs()
+            self.print_data()
 
     def aggregate_jobs(self):
         """
@@ -103,6 +112,14 @@ class Launcher:
                 self.vector[pos] = data
                 pos += 1
 
+    def print_data(self):
+        """
+        Print value stored in the vector
+        :param vector:
+        """
+        for i, v in enumerate(self.vector):
+            print "A[%d]= %d" % (i, v)
+
 
 def load_config():
     """
@@ -110,15 +127,6 @@ def load_config():
     """
     with open('config.json') as f:
         return json.load(f)
-
-
-def print_data(vector):
-    """
-    Print value stored in the vector
-    :param vector:
-    """
-    for i, v in enumerate(vector):
-        print "A[%d]= %d" % (i, v)
 
 
 if __name__ == '__main__':
@@ -139,12 +147,11 @@ if __name__ == '__main__':
     config = load_config()
     if is_master:
         remote_ip = config["slave"]
-        vector = [1.111111] * 1024 * 1024 * 32
+
     else:
         remote_ip = config["master"]
-        vector = None
 
-    launcher = Launcher(is_master, remote_ip, vector)
+    launcher = Launcher(is_master, remote_ip)
     launcher.bootstrap()
 
     for work_thread in launcher.work_threads:
@@ -154,7 +161,5 @@ if __name__ == '__main__':
     while is_master and len(launcher.finished_jobs) != NUM_JOB:
         sleep(1)
 
-    if is_master:
-        print_data(vector)
 
     print "All jobs are finished!"

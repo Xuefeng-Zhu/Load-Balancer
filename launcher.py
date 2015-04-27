@@ -132,6 +132,7 @@ class Launcher:
             diff = self.vector[i+1] - self.vector[i]
             if diff > 0.00001:
                 print "ERROR: A[i] = %d, A[i+1] = %d" % (self.vector[i], self.vector[i+1])
+        print "No errors"
 
 
 def load_config():

@@ -128,7 +128,7 @@ class Launcher:
         :param vector:
         """
         print "Checking"
-        if (len(set(lst)) == 1):
+        if len(set(lst)) == 1:
             print "All elements in the vector are equal"
         else:
             print "There is error in the vector"

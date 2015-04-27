@@ -147,7 +147,8 @@ if __name__ == '__main__':
     launcher = Launcher(is_master, remote_ip, vector)
     launcher.bootstrap()
 
-    launcher.work_thread.join()
+    for work_thread in launcher.work_threads:
+        work_thread.join()
 
     # wait until all jobs finish
     while is_master and len(launcher.finished_jobs) != NUM_JOB:

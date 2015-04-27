@@ -94,7 +94,7 @@ class Launcher:
         # start to aggregate jobs when all jobs finished
         if len(self.finished_jobs) == NUM_JOB:
             self.aggregate_jobs()
-            self.print_data()
+            self.check_data()
 
     def aggregate_jobs(self):
         """
@@ -113,6 +113,17 @@ class Launcher:
         """
         for i, v in enumerate(self.vector):
             print "A[%d]= %d" % (i, v)
+
+    def check_data(self):
+        """
+        Print value stored in the vector
+        :param vector:
+        """
+        print "Aggregating..."
+        for i in range(len(self.vector) - 1):
+            diff = self.vector[i+1] - self.vector[i]
+            if diff > 0.00001:
+                print "ERROR: A[i] = %d, A[i+1] = %d" % (self.vector[i], self.vector[i+1])
 
 
 def load_config():

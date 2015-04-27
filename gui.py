@@ -3,7 +3,7 @@ import ttk
 from Tkinter import *
 import tkMessageBox
 import sys
-from threading import Thread
+from threading import Thread, Lock
 from launcher import Launcher, load_config
 
 __author__ = 'Yanwen and Xuefeng'
@@ -15,6 +15,7 @@ class LoadBalance(tk.Tk):
 
         self.launcher = None
         self.is_start = False
+        self.lock = Lock()
 
         style = ttk.Style()
         style.configure("BW.TLabel", foreground="black", background="white")
@@ -67,7 +68,9 @@ class LoadBalance(tk.Tk):
         self.cpu_label.configure(text="CPU Usage: %d" %state.cpu_usage)
 
     def on_job_finish(self):
+        self.lock.acquire()
         self.progress["value"] += 1
+        self.lock.release()
 
     def on_message(self, message):
         self.table.insert(0, message)

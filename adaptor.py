@@ -61,7 +61,7 @@ class Adaptor:
             if self.remote_state.num_jobs < JOB_QUEUE_MAX:
                 num_transfer_jobs = min(self.job_queue.qsize() - JOB_QUEUE_MAX,
                                         JOB_QUEUE_MAX - self.remote_state.num_jobs)
-                self.transfer_manager.send_job(num_transfer_jobs)
+                self.transfer_manager.send_jobs(num_transfer_jobs)
 
     def receiver_init(self):
         """

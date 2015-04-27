@@ -19,7 +19,7 @@ class WorkerThread(threading.Thread):
     def run(self):
         """ This is the actual workhorse of the thread.  Executes the job if there is a current unfinished job. """
         start_time = time.time()
-        while self.job_queue.qsize() > 0:
+        while True:
             self.current_job = self.job_queue.get()
 
             # run job until finished

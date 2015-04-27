@@ -83,8 +83,8 @@ class Adaptor:
         """
         update_amount = self.job_queue.qsize() - self.remote_state.num_jobs
         if update_amount > JOB_QUEUE_MAX_DIFF:
-            num_transfer_jobs = update_amount * self.remote_state.throttling / self.local_state.throttling
-            actual_transfer_jobs = min(num_transfer_jobs, self.job_queue.qsize())
+            ##num_transfer_jobs = update_amount * (self.remote_state.throttling / self.local_state.throttling)
+            actual_transfer_jobs = min(JOB_QUEUE_MAX_DIFF, self.job_queue.qsize())
             print "Load Balance: %d" % actual_transfer_jobs
             self.transfer_manager.send_jobs(actual_transfer_jobs)
 

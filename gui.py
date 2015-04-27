@@ -3,6 +3,7 @@ import ttk
 from Tkinter import *
 import tkMessageBox
 import sys
+from threading import Thread
 from launcher import Launcher, load_config
 
 __author__ = 'Yanwen and Xuefeng'
@@ -49,7 +50,8 @@ class LoadBalance(tk.Tk):
     def start_launcher(self):
         if not self.is_start:
             self.is_start = True
-            self.launcher.bootstrap()
+            thread = Thread(target=self.launcher.bootstrap)
+            thread.start()
 
     def change_throttle(self):
         value = int(self.entry.get())

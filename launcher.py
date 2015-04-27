@@ -53,7 +53,7 @@ class Launcher:
         self.transfer_manager.receive_job()
 
         # wait until receiving half of jobs
-        while self.job_queue.qsize() < NUM_JOB/2:
+        while self.job_queue.qsize() != NUM_JOB/2:
             sleep(0.1)
 
         # receive all jobs and exit the bootstrap stage

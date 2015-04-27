@@ -128,8 +128,7 @@ class Launcher:
         """
         print "Aggregating..."
         for i in range(len(self.vector) - 1):
-            diff = self.vector[i+1] - self.vector[i]
-            if diff > 0.00001:
+            if self.vector[i+1] != self.vector[i]:
                 print "ERROR: A[i] = %d, A[i+1] = %d" % (self.vector[i], self.vector[i+1])
         print "No errors"
 

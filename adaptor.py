@@ -4,6 +4,7 @@ __author__ = 'Xuefeng'
 
 JOB_QUEUE_MAX = 200
 JOB_QUEUE_MIN = 20
+JOB_QUEUE_MAX_DIFF = 20
 
 
 class Adaptor:
@@ -48,7 +49,7 @@ class Adaptor:
 
     def on_state_update(self):
         """
-        Callback funciton when remote state is update.
+        Callback function when remote state is update.
         This function also triggers the transfer policy
         """
         self.sender_init()
@@ -72,6 +73,15 @@ class Adaptor:
                 num_transfer_jobs = min(self.job_queue.qsize() - JOB_QUEUE_MIN,
                                         JOB_QUEUE_MIN - self.remote_state.num_jobs)
                 self.transfer_manager.send_jobs(num_transfer_jobs)
+
+    def sender_init_throttle(self):
+        """
+        Initiate the transfer job based on remote state
+        """
+        if (self.remote_state.num_jobs - self.job_queue.qsize()) > JOB_QUEUE_MAX_DIFF:
+            num_transfer_jobs = JOB_QUEUE_MAX_DIFF * self.remote_state.throttling / 100
+            actual_transfer_jobs = min(num_transfer_jobs, self.job_queue.qsize())
+            self.transfer_manager.send_jobs(actual_transfer_jobs)
 
     def symmetric_init(self):
         """

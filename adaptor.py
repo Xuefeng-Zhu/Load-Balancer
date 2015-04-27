@@ -1,3 +1,4 @@
+import math
 from state import State
 
 __author__ = 'Xuefeng'
@@ -78,7 +79,7 @@ class Adaptor:
         """
         Initiate the transfer job based on remote state
         """
-        if (self.remote_state.num_jobs - self.job_queue.qsize()) > JOB_QUEUE_MAX_DIFF:
+        if (math.fabs(self.remote_state.num_jobs - self.job_queue.qsize())) > JOB_QUEUE_MAX_DIFF:
             num_transfer_jobs = JOB_QUEUE_MAX_DIFF * self.remote_state.throttling / 100
             actual_transfer_jobs = min(num_transfer_jobs, self.job_queue.qsize())
             self.transfer_manager.send_jobs(actual_transfer_jobs)

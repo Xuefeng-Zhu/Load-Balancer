@@ -107,6 +107,7 @@ class Launcher:
         """
         Map the data back to vector
         """
+        print "Aggregating..."
         for job in self.finished_jobs:
             pos = job.pos
             for data in job.work_data:
@@ -126,11 +127,11 @@ class Launcher:
         Print value stored in the vector
         :param vector:
         """
-        print "Aggregating..."
-        for i in range(len(self.vector) - 1):
-            if self.vector[i+1] != self.vector[i]:
-                print "ERROR: A[i] = %d, A[i+1] = %d" % (self.vector[i], self.vector[i+1])
-        print "No errors"
+        print "Checking"
+        if (len(set(lst)) == 1):
+            print "All elements in the vector are equal"
+        else:
+            print "There is error in the vector"
 
 
 def load_config():

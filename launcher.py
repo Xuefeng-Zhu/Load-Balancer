@@ -121,7 +121,6 @@ class Launcher:
         for i, v in enumerate(self.vector):
             print "A[%d]= %d" % (i, v)
 
-
     def check_data(self):
         """
         Print value stored in the vector

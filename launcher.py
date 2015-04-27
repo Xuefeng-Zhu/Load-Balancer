@@ -50,16 +50,17 @@ class Launcher:
             self.allocate_jobs()
             self.transfer_jobs()
 
-        self.hardware_monitor.start()
         self.transfer_manager.receive_job()
-        self.state_manager.receive_state()
-        self.state_manager.start()
 
-        # wait until receiving at least 8 jobs
-        while self.job_queue.qsize() < 8:
+        # wait until receiving half of jobs
+        while self.job_queue.qsize() != NUM_JOB/2:
             sleep(0.1)
 
         # receive all jobs and exit the bootstrap stage
+        self.hardware_monitor.start()
+        self.state_manager.receive_state()
+        self.state_manager.start()
+
         for i in range(NUM_THREADS):
             self.work_threads[i].start()
 

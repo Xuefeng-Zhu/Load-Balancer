@@ -12,6 +12,7 @@ from adaptor import Adaptor
 __author__ = 'Xuefeng Zhu'
 
 NUM_JOB = 1024
+NUM_THREADS = 4
 
 
 class Launcher:
@@ -25,7 +26,11 @@ class Launcher:
         self.finished_jobs = []
 
         self.job_queue = Queue()
-        self.work_thread = WorkerThread(self.job_queue, self)
+        self.work_threads = []
+
+        for i in range(NUM_THREADS):
+            self.work_threads.append(WorkerThread(self.job_queue, self, i))
+
         self.hardware_monitor = HardwareMonitor(self.work_thread)
         self.transfer_manager = TransferManager(self.job_queue, remote_ip, self)
         self.state_manager = StateManager(remote_ip)
@@ -50,7 +55,8 @@ class Launcher:
             sleep(0.1)
 
         # receive all jobs and exit the bootstrap stage
-        self.work_thread.start()
+        for i in range(NUM_THREADS):
+            self.work_threads[i].start()
 
     def allocate_jobs(self):
         """

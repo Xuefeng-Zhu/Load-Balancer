@@ -61,8 +61,8 @@ class LoadBalance(tk.Tk):
 
     def on_state_update(self, state):
         self.jobs_label.configure(text="Pending Jobs: %d" %state.num_jobs)
-        self.jobs_label.configure(text="Throttling: %d" %state.throttling)
-        self.jobs_label.configure(text="CPU Usage: %d" %state.cpu_usage)
+        self.throttling_label.configure(text="Throttling: %d" %state.throttling)
+        self.cpu_label.configure(text="CPU Usage: %d" %state.cpu_usage)
 
     def on_job_finish(self):
         self.progress["value"] += 1

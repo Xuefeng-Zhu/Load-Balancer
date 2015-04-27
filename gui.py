@@ -34,6 +34,13 @@ class LoadBalance(tk.Tk):
         self.progress["value"] = 0
         self.progress.pack()
 
+        self.jobs_label = ttk.Label(text="Pending Jobs: 0", style="BW.TLabel")
+        self.jobs_label.pack()
+        self.throttling_label = ttk.Label(text="Throttling: 100", style="BW.TLabel")
+        self.throttling_label.pack()
+        self.cpu_label = ttk.Label(text="CPU Usage: 0", style="BW.TLabel")
+        self.cpu_label.pack()
+
         self.mess_label = ttk.Label(text="Message:", style="BW.TLabel")
         self.mess_label.pack()
         self.table = Listbox()
@@ -42,7 +49,6 @@ class LoadBalance(tk.Tk):
     def start_launcher(self):
         if not self.is_start:
             self.is_start = True
-            self.mess_label.text = "dsds"
             self.launcher.bootstrap()
 
     def change_throttle(self):
@@ -52,6 +58,11 @@ class LoadBalance(tk.Tk):
             tkMessageBox.showinfo('Success', 'Throttle value has been updated!')
         else:
             tkMessageBox.showinfo('Error', 'Throttle input is invalid!')
+
+    def on_state_update(self, state):
+        self.jobs_label.configure(text="Pending Jobs: %d" %state.num_jobs)
+        self.jobs_label.configure(text="Throttling: %d" %state.throttling)
+        self.jobs_label.configure(text="CPU Usage: %d" %state.cpu_usage)
 
     def on_job_finish(self):
         self.progress["value"] += 1

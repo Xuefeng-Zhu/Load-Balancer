@@ -39,8 +39,8 @@ class Launcher:
         self.hardware_monitor = HardwareMonitor(self.work_threads)
         self.transfer_manager = TransferManager(self.job_queue, remote_ip, self)
         self.state_manager = StateManager(remote_ip)
-        self.adaptor = Adaptor(self.work_threads[0], self.job_queue,
-                               self.transfer_manager, self.state_manager, self.hardware_monitor)
+        self.adaptor = Adaptor(self.work_threads[0], self.job_queue, self.transfer_manager,
+                               self.state_manager, self.hardware_monitor, self.gui)
 
     def bootstrap(self):
         """

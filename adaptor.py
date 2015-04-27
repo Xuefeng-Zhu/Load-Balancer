@@ -12,13 +12,14 @@ class Adaptor:
     """
 
     def __init__(self, work_thread, job_queue, transfer_manager,
-                 state_manager, hardware_monitor):
+                 state_manager, hardware_monitor, gui):
         self.work_thread = work_thread
         self.job_queue = job_queue
         self.transfer_manager = transfer_manager
         self.state_manager = state_manager
         self.state_manager.adaptor = self
         self.hardware_monitor = hardware_monitor
+        self.gui = gui
 
         self.remote_state = State()
         self.local_state = State()
@@ -36,6 +37,8 @@ class Adaptor:
         Callback function when state is going to be sent
         """
         self.update_local_state()
+        if self.gui:
+            self.gui.on_state_update(self.local_state)
         return self.local_state
 
     def on_state_receive(self, state):
